@@ -30,9 +30,47 @@ void Thread::threadWrapper(void* thread) {
     ((Thread*)thread)->run();
 }
 
+int Thread::sleep(time_t time) {
+    return time_sleep(time);
+}
+
 void Thread::dispatch() {
     thread_dispatch();
 }
+
+Semaphore::Semaphore(unsigned init){
+    sem_open(&myHandle, init);
+}
+
+Semaphore::~Semaphore(){
+    sem_close(&myHandle);
+}
+
+int Semaphore::wait(){
+    return sem_wait(myHandle);
+}
+
+int Semaphore::signal(){
+    return sem_signal(myHandle);
+}
+
+
+void PeriodicThread::periodicActivation() {}
+
+PeriodicThread::PeriodicThread(time_t period) : Thread(), period(period) {}
+
+void PeriodicThread::terminate() {
+    period = 0;
+}
+
+void PeriodicThread::run() {
+    while (period) {
+        periodicActivation();
+
+        sleep(period);
+    }
+}
+
 
 
 

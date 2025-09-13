@@ -17,8 +17,6 @@ enum syscall_codes {
     SEM_CLOSE = 0x22,
     SEM_WAIT = 0x23,
     SEM_SIGNAL = 0x24,
-    SEM_TIMEDWAIT = 0x25,
-    SEM_TRYWAIT = 0x26,
     TIME_SLEEP = 0x31,
     GETC = 0x41,
     PUTC = 0x42
@@ -46,6 +44,28 @@ void thread_dispatch();
 typedef unsigned long time_t;
 
 int time_sleep(time_t time);
+
+class _sem;
+typedef _sem* sem_t;
+
+int sem_open(sem_t* handle, unsigned init);
+
+int sem_close(sem_t* handle);
+
+int sem_wait(sem_t id);
+
+int sem_signal(sem_t id);
+
+typedef unsigned long time_t;
+
+int time_sleep(time_t);
+
+const int EOF = -1;
+
+char getc();
+
+void putc();
+
 
 
 

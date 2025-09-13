@@ -15,7 +15,7 @@ class Thread{
 
         void start();
 
-        //static int sleep(time_t);
+        static int sleep(time_t);
 
         static void dispatch();
 
@@ -36,5 +36,32 @@ class Thread{
         void* arg;
 };
 
+
+class Semaphore{
+    public:
+        Semaphore(unsigned init = 1);
+        virtual ~Semaphore();
+
+        int wait();
+        int signal();
+
+    private:
+        sem_t myHandle;
+};
+
+class PeriodicThread : public Thread {
+    public:
+        void terminate();
+
+    protected:
+        PeriodicThread(time_t period);
+        
+        virtual void periodicActivation();
+
+        virtual void run() override;
+
+    private:
+        time_t period;
+};
 
 #endif // _syscall_cpp_hpp

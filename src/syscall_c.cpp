@@ -95,3 +95,72 @@ void thread_dispatch() {
 
     __asm__ volatile("ecall");
 }
+
+int sem_open(sem_t* handle, unsigned init){
+    __asm__ volatile("mv a2, %[init]" : : [init] "r"(init));
+
+    __asm__ volatile("mv a1, %[handle]" : : [handle] "r" (handle));
+
+    __asm__ volatile("mv a0, %0" : : "r" (SEM_OPEN));
+
+    __asm__ volatile("ecall");
+
+    int volatile ret;
+
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+
+    return ret;
+}
+
+int sem_close(sem_t* handle){
+    __asm__ volatile("mv a1, %[handle]" : : [handle] "r" (handle));
+
+    __asm__ volatile("mv a0, %0" : : "r" (SEM_CLOSE));
+
+    __asm__ volatile("ecall");
+
+    int volatile ret;
+
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+
+    return ret;
+}
+
+int sem_wait(sem_t id){
+    __asm__ volatile("mv a1, %[id]" : : [id] "r" (id));
+
+    __asm__ volatile("mv a0, %0" : : "r" (SEM_WAIT));
+
+    __asm__ volatile("ecall");
+
+    int volatile ret;
+
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+
+    return ret;
+}
+
+int sem_signal(sem_t id){
+    __asm__ volatile("mv a1, %[id]" : : [id] "r" (id));
+
+    __asm__ volatile("mv a0, %0" : : "r" (SEM_SIGNAL));
+
+    __asm__ volatile("ecall");
+
+    int volatile ret;
+
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+
+    return ret;
+}
+
+int time_sleep(time_t time) {
+    __asm__ volatile("mv a1, %0" : : "r"(time));
+    __asm__ volatile("mv a0, %0" : : "r"(TIME_SLEEP));
+
+    __asm__ volatile("ecall");
+
+    int volatile ret;
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+    return ret;
+}

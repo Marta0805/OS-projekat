@@ -22,7 +22,13 @@ public:
 
     void setFinished(bool value) { finished = value; }
 
+    bool isBlocked() const { return blocked; }
+
+    void setBlocked(bool block) { blocked = block; }
+
     static TCB* createMain();
+
+    uint64 getTimeSlice() const;
 
     ~TCB();
 
@@ -35,16 +41,14 @@ private:
     };
 
     Body body;
-
     void* arg;
-    
     uint64 *stack;
-
     Context context;
-
     uint64 timeSlice;
-
     bool finished;
+    bool blocked;
+
+    uint64 timeSliceCounter;
 
     friend class RiscV;
 

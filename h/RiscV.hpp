@@ -18,6 +18,12 @@ public:
         ECALL_SUPERVISOR_MODE= 9
     };
 
+     enum SipBitMask {
+        SIP_SSIE = (1 << 1),
+        SIP_STIE = (1 << 5),
+        SIP_SEIE = (1 << 9),
+    };
+
     enum Syscall
     {
         MEM_ALLOC = 0x01,
@@ -31,8 +37,6 @@ public:
         SEM_CLOSE = 0x22,
         SEM_WAIT = 0x23,
         SEM_SIGNAL = 0x24,
-        SEM_TIMEDWAIT = 0x25,
-        SEM_TRYWAIT = 0x26,
         TIME_SLEEP = 0x31,
         GETC = 0x41,
         PUTC = 0x42
@@ -145,6 +149,9 @@ public:
 
     static void w_reg(uint64 reg, int value);
 
+    static void set_mask_sip(uint64 mask);
+
+    static void clear_mask_sip(uint64 mask);
 
 
 private:
@@ -153,6 +160,14 @@ private:
     static void handleSupervisorTrap();
 
 };
+
+
+
+inline void clearSSIP() {
+    uint64 volatile SSIP = 1ull << 1;
+    asm volatile ("csrc sip, %0" :: "r"(SSIP));
+}
+
 
 inline uint64 RiscV::r_scause(){
     uint64 volatile scause;
@@ -240,4 +255,14 @@ inline uint64 RiscV::r_reg(uint64 reg) {
 inline void RiscV::w_reg(uint64 reg, int value) {
     __asm__ volatile("sd %[value], 8*%[reg](fp)" : : [value] "r"(value), [reg] "n"(reg));
 }
+
+
+inline void RiscV::set_mask_sip(uint64 mask) {
+    __asm__ volatile("csrs sip, %[mask]" : : [mask] "r"(mask));
+}
+
+inline void RiscV::clear_mask_sip(uint64 mask) {
+    __asm__ volatile("csrc sip, %[mask]" : : [mask] "r"(mask));
+}
+
 #endif // RISCV_HPP

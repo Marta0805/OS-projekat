@@ -7,16 +7,23 @@
 #include"../h/Scheduler.hpp"
 
 
+extern void userMain();
+
+void userMainWrapper(void* arg) {
+    userMain();
+}
+
 
 void _idle(void * a){
     while(true){
-        __putc('i');
         Thread::dispatch();
     }
 }
 
 
 int main(){
+    
+    Scheduler::init();
 
     RiscV::w_stvec((uint64)&RiscV::supervisorTrap);
 
@@ -25,14 +32,16 @@ int main(){
     TCB::running = _main;
 
     Thread* idle = new Thread(_idle, nullptr);
+
     idle->start();
 
-    while (true)
-    {
-        Thread::dispatch();
-    }
-    
+    Thread* userThread = new Thread(userMainWrapper, nullptr);
+
+    userThread->start();
+
+    TCB::dispatch();
 
     return 0;
+
 
 }

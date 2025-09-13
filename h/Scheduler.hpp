@@ -2,29 +2,36 @@
 #define SCHEDULER_HPP
 
 #include "../lib/hw.h"
-#include "../h/List.hpp"
+#include "../h/TCBList.hpp"
+#include "../h/STQueue.hpp"
 
 class TCB;
 
-
-
 class Scheduler {
 public:
-    static Scheduler* getInstance();
 
-    void putReadyThread(TCB* task);
+    static void init();              
 
-    TCB* getReadyThread(); 
+    static void putReadyThread(TCB* task);
 
-private:
-    Scheduler();
-    
-    static Scheduler* instance;
+    static TCB* getReadyThread(); 
 
-    List<TCB*> readyThreadQueue;
+    static void putSleepingThread(TCB* task, time_t sleepTime);
 
-    Scheduler(const Scheduler&) = delete;
-    Scheduler& operator=(const Scheduler&) = delete;    
+    static void awakeSleepingThread();
+
+    static time_t getTime() { return time; };
+
+    static void incTime() { time++; }
+
+private:    
+
+    static TCBList* readyThreadQueue;
+
+    static STQueue* sleepThreadQueue;
+
+    static time_t time;
+
 };
 
 #endif // SCHEDULER_HPP
