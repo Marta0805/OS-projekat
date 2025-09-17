@@ -26,9 +26,15 @@ public:
 
     void setBlocked(bool block) { blocked = block; }
 
+    bool isReady() const { return ready; };
+
+    void setReady(bool _ready) { ready = _ready; };
+
     static TCB* createMain();
 
     uint64 getTimeSlice() const;
+
+    bool isMein() const { return !running->body; }
 
     ~TCB();
 
@@ -47,6 +53,7 @@ private:
     uint64 timeSlice;
     bool finished;
     bool blocked;
+    bool ready;
 
     uint64 timeSliceCounter;
 

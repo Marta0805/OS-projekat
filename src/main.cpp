@@ -5,12 +5,17 @@
 #include "../h/MemoryAllocator.hpp"
 #include"../h/TCB.hpp"
 #include"../h/Scheduler.hpp"
+#include"../h/Console.hpp"
+#include "../h/Semaphore.hpp"
 
 
 extern void userMain();
 
 void userMainWrapper(void* arg) {
+    Semaphore* sem = (Semaphore*)arg;
     userMain();
+
+    sem->signal();
 }
 
 
@@ -20,12 +25,21 @@ void _idle(void * a){
     }
 }
 
-
 int main(){
-    
-    Scheduler::init();
-
     RiscV::w_stvec((uint64)&RiscV::supervisorTrap);
+
+    Scheduler::init();
+    _Console::init();
+
+    _Console* console = _Console::getInstance();
+    
+
+    Thread* tx = new Thread(console->_putcHandler, nullptr);
+    Thread* rx = new Thread(console->_getcHandler, nullptr);
+
+    tx->start();
+
+    rx->start();
 
     TCB* _main = TCB::createMain();
 
@@ -34,14 +48,16 @@ int main(){
     Thread* idle = new Thread(_idle, nullptr);
 
     idle->start();
-
-    Thread* userThread = new Thread(userMainWrapper, nullptr);
+    
+    Semaphore* sem = new Semaphore(0);
+    
+    Thread* userThread = new Thread(userMainWrapper, sem);
 
     userThread->start();
+    
+    sem->wait(); 
 
-    TCB::dispatch();
+    delete sem;
 
     return 0;
-
-
 }

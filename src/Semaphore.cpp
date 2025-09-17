@@ -32,8 +32,10 @@ void _Semaphore::signal(){
 void _Semaphore::block(){
     if(TCB::running == nullptr || TCB::running->isFinished() || TCB::running->isBlocked()) return;
 
+    TCB::running->setReady(false);
+
     TCB::running->setBlocked(true);
-    
+
     blockedQueue.push_back(TCB::running);
 
     TCB::dispatch();
@@ -44,6 +46,8 @@ void _Semaphore::deblock(){
     if(!blocked) return;
 
     blocked->setBlocked(false);
+    
+    blocked->setReady(true);
 
     Scheduler::putReadyThread(blocked);
 }

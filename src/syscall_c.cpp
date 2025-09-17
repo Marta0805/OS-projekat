@@ -8,7 +8,7 @@
 void* mem_alloc(size_t size) {
     if(size == 0) return nullptr;
 
-    size_t blockSize = ((size + MEM_BLOCK_SIZE - 1 + MemoryAllocator::HEADER_BLOCKS)) / MEM_BLOCK_SIZE;
+    size_t blockSize = ((size + MEM_BLOCK_SIZE - 1)) / MEM_BLOCK_SIZE;
 
     __asm__ volatile("mv a1, %[blockSize]" : : [blockSize] "r"(blockSize));
     __asm__ volatile("mv a0, %0" : : "r"(MEM_ALLOC));
@@ -112,7 +112,7 @@ int sem_open(sem_t* handle, unsigned init){
     return ret;
 }
 
-int sem_close(sem_t* handle){
+int sem_close(sem_t handle){
     __asm__ volatile("mv a1, %[handle]" : : [handle] "r" (handle));
 
     __asm__ volatile("mv a0, %0" : : "r" (SEM_CLOSE));
@@ -156,6 +156,7 @@ int sem_signal(sem_t id){
 
 int time_sleep(time_t time) {
     __asm__ volatile("mv a1, %0" : : "r"(time));
+    
     __asm__ volatile("mv a0, %0" : : "r"(TIME_SLEEP));
 
     __asm__ volatile("ecall");
@@ -163,4 +164,24 @@ int time_sleep(time_t time) {
     int volatile ret;
     __asm__ volatile("mv %0, a0" : "=r"(ret));
     return ret;
+}
+
+char getc() {
+    __asm__ volatile("mv a0, %0" : : "r"(GETC));
+
+    __asm__ volatile("ecall");
+
+    char volatile ret;
+
+    __asm__ volatile("mv %0, a0" : "=r"(ret));
+
+    return ret;
+}
+
+void putc(char c) {
+    __asm__ volatile("mv a1, %0" : : "r"(c));
+
+    __asm__ volatile("mv a0, %0" : : "r"(PUTC));
+
+    __asm__ volatile("ecall");
 }

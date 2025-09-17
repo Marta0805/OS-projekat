@@ -50,7 +50,7 @@ typedef _sem* sem_t;
 
 int sem_open(sem_t* handle, unsigned init);
 
-int sem_close(sem_t* handle);
+int sem_close(sem_t handle);
 
 int sem_wait(sem_t id);
 
@@ -64,7 +64,7 @@ const int EOF = -1;
 
 char getc();
 
-void putc();
+void putc(char c);
 
 
 

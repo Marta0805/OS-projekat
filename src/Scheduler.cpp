@@ -31,6 +31,7 @@ void Scheduler::init() {
 
 void Scheduler::putReadyThread(TCB* task) {
     readyThreadQueue->push_back(task);
+    task->setReady(true);
 }
 TCB* Scheduler::getReadyThread() {
     TCB* task = readyThreadQueue->pop_front();
@@ -42,12 +43,12 @@ void Scheduler::putSleepingThread(TCB* task, time_t wakeUptime){
     SleepingNode* node = (SleepingNode*)MemoryAllocator::getInstance()->mem_alloc(blockSize);
     node->tcb = task;
     node->wakeUpTime = Scheduler::time + wakeUptime;
-    task->setFinished(false);
+    task->setReady(false);
     sleepThreadQueue->pushSTQ(node);
 }
 
 void Scheduler::awakeSleepingThread(){
-    while (!sleepThreadQueue->empty()) {
+    while (sleepThreadQueue && !sleepThreadQueue->empty()) {
         SleepingNode* sn = sleepThreadQueue->front();   
         if (!sn || sn->wakeUpTime > Scheduler::time) break;  
         sn = sleepThreadQueue->popSTQ();    

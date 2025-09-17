@@ -6,6 +6,7 @@
 #include"../h/Scheduler.hpp"
 #include "../lib/console.h"
 #include"../h/Semaphore.hpp"
+#include"../h/Console.hpp"
 
 void RiscV::popSppSpie(){
     __asm__ volatile("csrc sstatus, %0" ::"r"(SSTATUS_SPP));
@@ -108,6 +109,20 @@ void RiscV::handleSupervisorTrap(){
                 w_reg(10, 0);
                 break;
             }
+            case GETC:{
+                char retVal = _Console::getInstance()->_getc();
+                //char retVal = __getc();
+                w_reg(10, retVal);
+                break;
+            }
+            case PUTC:{
+                char a1 = (char)r_reg(11);
+                _Console::getInstance()->_putc(a1);
+                //__putc(a1);
+                break;
+            }
+            default:
+                break;
 
         }
         
@@ -126,7 +141,11 @@ void RiscV::handleSupervisorTrap(){
     }
     else if(scause==CONSOLE_INTERRUPT)
     {
-        console_handler();
+        int a = plic_claim();
+        if (a == 10) {
+            _Console::getInstance()->console_handler();
+           // console_handler();
+        }
     }
     else
     {

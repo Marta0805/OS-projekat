@@ -64,4 +64,12 @@ class PeriodicThread : public Thread {
         time_t period;
 };
 
+
+class Console{
+    public:
+        static char getc();
+
+        static void putc(char c);
+};
+
 #endif // _syscall_cpp_hpp

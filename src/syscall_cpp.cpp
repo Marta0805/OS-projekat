@@ -1,5 +1,5 @@
 #include"../h/syscall_cpp.hpp"
-
+#include "../h/syscall_c.hpp"
 void* operator new(size_t size) {
     return mem_alloc(size);
 }
@@ -43,7 +43,7 @@ Semaphore::Semaphore(unsigned init){
 }
 
 Semaphore::~Semaphore(){
-    sem_close(&myHandle);
+    sem_close(myHandle);
 }
 
 int Semaphore::wait(){
@@ -69,6 +69,13 @@ void PeriodicThread::run() {
 
         sleep(period);
     }
+}
+
+char Console::getc() {
+    return::getc();
+}
+void Console::putc(char c) {
+    ::putc(c);
 }
 
 
